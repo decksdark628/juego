@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane id="AnchorPane" fx:id="mainFrame" maxHeight="768.0" maxWidth="1024.0" minHeight="768.0" minWidth="1024.0" prefHeight="768.0" prefWidth="1024.0" stylesheets="@LoginScreen.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controlador.SceneControllers.LoginScreenController">
+   <children>
+      <ImageView fitHeight="768.0" fitWidth="1024.0" pickOnBounds="true" smooth="false">
+         <image>
+            <Image url="@assets/images/LoginScreen-bg.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="185.0" fitWidth="475.0" layoutX="498.0" layoutY="231.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@assets/images/guiBox.png" />
+         </image>
+      </ImageView>
+      <Label id="label-usuario" layoutX="552.0" layoutY="248.0" styleClass="login-box-text" text="Usuario:" textFill="#dadada">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label id="label-contrasenya" layoutX="552.0" layoutY="326.0" styleClass="login-box-text" text="Contraseña:" textFill="#dadada">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <TextField fx:id="inputUsernameField" layoutX="552.0" layoutY="275.0" minHeight="20.0" prefHeight="30.0" prefWidth="364.0" styleClass="fillable-field">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </TextField>
+      <ImageView fx:id="logInButton" fitHeight="44.0" fitWidth="146.0" layoutX="663.0" layoutY="476.0" onMouseEntered="#buttonHover" onMouseExited="#buttonLeaveHover" onMousePressed="#buttonPress" onMouseReleased="#buttonRelease" pickOnBounds="true" preserveRatio="true" styleClass="log-in-screen">
+         <image>
+            <Image url="@assets/images/loginButton.png" />
+         </image>
+      </ImageView>
+      <PasswordField fx:id="inputPasswordField" layoutX="552.0" layoutY="353.0" minHeight="20.0" prefHeight="30.0" prefWidth="364.0" styleClass="fillable-field">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </PasswordField>
+      <Label id="label-registrar-top-text" fx:id="txtRegisterInvitation" layoutX="648.0" layoutY="533.0" styleClass="under-log-in-button" text="¿Aún no tienes una cuenta?" textFill="WHITE">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <Hyperlink id="hypr-registrar-button" fx:id="btnRegisterNewAccount" focusTraversable="false" layoutX="679.0" layoutY="552.0" onMouseClicked="#registerButtonClicked" opacity="0.8" styleClass="under-log-in-button" text="Regístrate aquí" textFill="#1a96c3" underline="true">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Hyperlink>
+      <Text fx:id="msgSuccessfulSignUp" fill="#37ab9c" layoutX="667.0" layoutY="451.0" strokeType="OUTSIDE" strokeWidth="0.0" text="¡Cuenta registrada!" visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Text>
+      <ImageView fx:id="dbStatusIndicator" fitHeight="49.0" fitWidth="50.0" layoutX="937.0" layoutY="41.0" onMouseClicked="#databaseIconClicked" pickOnBounds="true" preserveRatio="true" styleClass="db-icon">
+         <image>
+            <Image url="@assets/images/dbConnected.png" />
+         </image>
+      </ImageView>
+   </children>
+</AnchorPane>

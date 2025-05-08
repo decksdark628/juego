@@ -1,0 +1,107 @@
+@font-face {
+    font-family: "Roboto Condensed";
+    src: url("./assets/fonts/RobotoCondensed-Regular.ttf");
+}
+
+.scroll-bar:vertical{
+   -fx-background-color: transparent;
+   -fx-pref-width: 10px;
+}
+
+.decrement-button, .increment-button, .decrement-button:hover, .increment-button:hover {
+   -fx-display: none;
+   -fx-padding: 0 0 0 0;
+}
+
+.decrement-arrow, .increment-arrow, .decrement-arrow:hover, .increment-arrow:hover{
+   -fx-display: none;
+   -fx-background-color: transparent;
+   -fx-border-color: transparent;
+}
+
+.scroll-bar:vertical .thumb {
+   -fx-padding: 0px;
+   -fx-background-color:#5570ba40;
+   -fx-background-insets: 1 0 1 1;
+   -fx-background-radius: 5;
+}
+
+.scroll-bar:vertical .thumb:hover {
+   -fx-background-color:#5570ba90;
+}
+
+.scroll-bar:vertical .thumb:pressed {
+   -fx-background-color:#5570baaa;
+}
+
+#comment-box{
+   -fx-control-inner-background: #99aadda9;
+   -fx-background-color: transparent;
+   -fx-border-radius: 3px;
+   -fx-background-radius: 3px;
+   -fx-font-size: 20px;
+   -fx-font-family: "Roboto Condensed";
+}
+
+#comment-box:focused{
+    -fx-control-inner-background: #99aadda9;
+}
+
+.column-header-background{
+   visibility: hidden;
+}
+
+.table-row-cell{
+    -fx-background-color: transparent;
+}
+.table-row-cell:selected{
+    -fx-table-cell-border-color: transparent;
+}
+
+.table-view {
+    -fx-table-cell-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-font-family: "Roboto Condensed";
+    -fx-font-size: 22px;
+}
+
+.table-cell{
+    -fx-text-fill: #ffffff7c;
+}
+
+.table-row-cell:hover .table-cell {
+    -fx-text-fill: #ffffffbb;
+}
+
+.table-row-cell:selected .table-cell {
+    -fx-text-fill: #5291f0ff;
+}
+
+.comment-bubble{
+    -fx-border-radius: 3px;
+    -fx-padding: 2 0 8 0;
+}
+
+.user-alias-label{
+    -fx-text-fill: #5291f0dd;
+    -fx-font-size: 18px;
+    -fx-font-family: "Roboto Condensed";
+}
+
+.comment-text{
+    -fx-text-fill: #ffffffaa;
+    -fx-font-size: 18px;
+    -fx-padding: 2 0 5 0;
+    -fx-font-family: "Roboto Condensed";
+}
+
+#comments-scroll-pane, #comments-scroll-pane .viewport{
+    -fx-background-color: transparent;
+}
+
+.level-tag{
+    -fx-text-fill: #ffffff7c;
+    -fx-font-size: 16px;
+    -fx-font-family: "Roboto Condensed";
+    -fx-padding: 0 0 0 10;
+}

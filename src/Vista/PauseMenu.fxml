@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="768.0" prefWidth="1024.0" style="-fx-background-color: #2D2D2D;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controlador.SceneControllers.PauseController">
+
+    <Rectangle fill="#2D2D2D" height="768.0" width="1024.0" />
+
+    <VBox alignment="CENTER" layoutX="312.0" layoutY="146.0" prefHeight="472.0" prefWidth="410.0" spacing="40">
+        
+        <Text style="-fx-fill: #FFFFFF; -fx-font-weight: bold;" text="JUEGO PAUSADO">
+            <font>
+                <Font name="Impact" size="48.0" />
+            </font>
+        </Text>
+
+        <VBox alignment="CENTER" spacing="20">
+            <Button fx:id="resumeButton" prefHeight="50.0" prefWidth="200.0" style="-fx-base: #4CAF50; -fx-font-weight: bold;" text="Continuar">
+                <font>
+                    <Font size="20.0" />
+                </font>
+            </Button>
+         <Button fx:id="upgradeMenuButton" prefHeight="50.0" prefWidth="200.0" style="-fx-base: #4CAF50; -fx-font-weight: bold;" text="Menu de Mejoras">
+            <font>
+               <Font size="20.0" />
+            </font>
+         </Button>
+            
+            <Button fx:id="exitButton" prefHeight="50.0" prefWidth="200.0" style="-fx-base: #F44336; -fx-font-weight: bold;" text="Salir">
+                <font>
+                    <Font size="20.0" />
+                </font>
+            </Button>
+        </VBox>
+    </VBox>
+</AnchorPane>

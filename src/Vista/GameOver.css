@@ -1,0 +1,14 @@
+@font-face {
+    font-family: "Cute Font Regular";
+    src: url("./assets/fonts/CuteFont-Regular.ttf");
+}
+
+.txt-score{
+    -fx-font-family: "Cute Font Regular";
+    -fx-font-size: 45px;
+    -fx-text-alignment: center;
+}
+.txt-giveUp{
+    -fx-font-family: "Cute Font Regular";
+    -fx-font-size: 69px;
+}

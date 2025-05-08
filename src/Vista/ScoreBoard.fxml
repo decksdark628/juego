@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" stylesheets="@ScoreBoard.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controlador.SceneControllers.ScoreBoardController">
+   <children>
+      <ImageView fitHeight="768.0" fitWidth="1024.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@assets/images/ScoreBoard-bg.png" />
+         </image>
+      </ImageView>
+    <AnchorPane layoutX="56.0" layoutY="64.0" minHeight="0.0" minWidth="0.0" prefHeight="632.0" prefWidth="373.0">
+         <children>
+            <TableView id="games-played-table" fx:id="scoresTable" layoutX="-1.0" prefHeight="618.0" prefWidth="373.0">
+              <columns>
+                <TableColumn fx:id="columnID" editable="false" maxWidth="60.0" minWidth="50.0" prefWidth="58.0" sortable="false" text="ID" />
+                <TableColumn fx:id="columnUserName" editable="false" maxWidth="255.0" minWidth="205.0" prefWidth="220.0" sortable="false" text="USUARIO" />
+                  <TableColumn fx:id="columnScore" editable="false" maxWidth="145.0" minWidth="95.0" prefWidth="100.0" sortable="false" text="PUNTAJE" />
+              </columns>
+            </TableView>
+         </children>
+      </AnchorPane>
+      <TextArea id="comment-box" fx:id="commentBox" layoutX="504.0" layoutY="554.0" prefHeight="86.0" prefWidth="450.0" />
+      <ImageView id="publish-comment-button" fx:id="btnPublish" fitHeight="36.0" fitWidth="85.0" layoutX="869.0" layoutY="647.0" onMouseEntered="#publishBtnHover" onMouseExited="#publishBtnLeft" onMousePressed="#publishBtnPressed" onMouseReleased="#publishBtnRelease" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@assets/images/publishButton.png" />
+         </image>
+      </ImageView>
+      <ImageView id="log-off-button" fx:id="btnLogoff" fitHeight="36.0" fitWidth="133.0" layoutX="862.0" layoutY="712.0" onMouseEntered="#LogOffBtnHover" onMouseExited="#LogOffBtnLeft" onMousePressed="#LogOffBtnPressed" onMouseReleased="#LogOffBtnRelease" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@assets/images/logOffButton.png" />
+         </image>
+      </ImageView>
+      <ImageView id="return-to-game-button" fx:id="btnReturn" fitHeight="36.0" fitWidth="142.0" layoutX="34.0" layoutY="712.0" onMouseEntered="#returnBtnHover" onMouseExited="#returnBtnLeft" onMousePressed="#returnBtnPressed" onMouseReleased="#returnBtnRelease" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@assets/images/returnToGameButton.png" />
+         </image>
+      </ImageView>
+      <ScrollPane id="comments-scroll-pane" fx:id="commentsScrollpane" hbarPolicy="NEVER" layoutX="472.0" layoutY="74.0" prefHeight="431.0" prefWidth="514.0">
+         <content>
+            <VBox id="comments-container" fx:id="commentsContainer" prefHeight="432.0" prefWidth="515.0">
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </VBox>
+         </content>
+      </ScrollPane>
+   </children>
+</AnchorPane>

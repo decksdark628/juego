@@ -1,0 +1,6 @@
+*~
+game/nbproject/private
+*.class
+/nbproject/private/
+/dist/
+/build/

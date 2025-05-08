@@ -1,0 +1,13 @@
+@font-face {
+    font-family: "Cute Font Regular";
+    src: url("./assets/fonts/CuteFont-Regular.ttf");
+}
+
+#timer-text{
+    -fx-font-family: "Cute Font Regular";
+    -fx-font-size: 75px;
+}
+#score-text{
+    -fx-font-family: "Cute Font Regular";
+    -fx-font-size: 45px;   
+}

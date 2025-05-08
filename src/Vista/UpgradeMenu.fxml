@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="768.0" prefWidth="1024.0" style="-fx-background-color: #2D2D2D;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controlador.SceneControllers.UpgradeMenuController">
+   <children>
+       <Text layoutX="300.0" layoutY="72.0" style="-fx-fill: #FFFFFF;" text="MENU DE MEJORAS" textAlignment="CENTER" wrappingWidth="438.511962890625">
+         <font>
+            <Font name="Impact" size="48.0" />
+         </font>
+      </Text>
+      <AnchorPane layoutX="544.0" layoutY="508.0" prefHeight="150.0" prefWidth="352.0" style="-fx-border-color: green; -fx-border-width: 5; -fx-background-color: teal;">
+         <children>
+            <Text fill="WHITE" layoutX="175.0" layoutY="71.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Reduce el Tiempo de Recarga" textAlignment="CENTER" wrappingWidth="164.99999999999994">
+               <font>
+                  <Font size="17.0" />
+               </font>
+            </Text>
+            <ImageView fitHeight="131.0" fitWidth="131.0" layoutX="6.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@assets/images/upgrade_reload.png" />
+               </image>
+            </ImageView>
+             <Button fx:id="upgradeOption6" layoutX="142.0" layoutY="5.0" prefHeight="50.0" prefWidth="220.0" style="-fx-base: #FF0000;" text="Reload Time">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Button>
+            <Text fx:id="reloadTimeTooltip" fill="#19fc00" layoutX="148.0" layoutY="130.0" strokeType="OUTSIDE" strokeWidth="0.0" text="actual --&gt; mejorado" textAlignment="CENTER" wrappingWidth="220.0">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Text>
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="119.0" layoutY="508.0" prefHeight="150.0" prefWidth="352.0" style="-fx-border-color: green; -fx-border-width: 5; -fx-background-color: teal;">
+         <children>
+            <Text fill="WHITE" layoutX="175.0" layoutY="71.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Aumenta la Municion Maxima" textAlignment="CENTER" wrappingWidth="164.99999999999994">
+               <font>
+                  <Font size="17.0" />
+               </font>
+            </Text>
+            <ImageView fitHeight="131.0" fitWidth="131.0" layoutX="12.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@assets/images/upgrade-ammunition.png" />
+               </image>
+            </ImageView>
+            <Button fx:id="upgradeOption5" layoutX="141.0" layoutY="5.0" prefHeight="50.0" prefWidth="220.0" style="-fx-base: #FF0000;" text="Max Ammo">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Button>
+            <Text fx:id="ammoTooltip" fill="#19fc00" layoutX="148.0" layoutY="130.0" strokeType="OUTSIDE" strokeWidth="0.0" text="actual --&gt; mejorado" textAlignment="CENTER" wrappingWidth="220.0">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Text>
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="543.0" layoutY="342.0" prefHeight="150.0" prefWidth="352.0" style="-fx-border-color: green; -fx-border-width: 5; -fx-background-color: teal;">
+         <children>
+             <Button fx:id="upgradeOption2" layoutX="142.0" layoutY="5.0" prefHeight="50.0" prefWidth="220.0" style="-fx-base: #FF0000;" text="Damage">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Button>
+            <Text fill="WHITE" layoutX="175.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Aumenta el Daño" textAlignment="CENTER" wrappingWidth="164.99999999999994">
+               <font>
+                  <Font size="17.0" />
+               </font>
+            </Text>
+            <ImageView fitHeight="137.0" fitWidth="131.0" layoutX="6.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@assets/images/upgrade_damage.png" />
+               </image>
+            </ImageView>
+            <Text fx:id="damageTooltip" fill="#19fc00" layoutX="148.0" layoutY="130.0" strokeType="OUTSIDE" strokeWidth="0.0" text="actual --&gt; mejorado" textAlignment="CENTER" wrappingWidth="220.0">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Text>
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="118.0" layoutY="342.0" prefHeight="150.0" prefWidth="352.0" style="-fx-border-color: green; -fx-border-width: 5; -fx-background-color: teal;">
+         <children>
+             <Button fx:id="upgradeOption1" layoutX="141.0" layoutY="5.0" prefHeight="50.0" prefWidth="220.0" style="-fx-base: #FF0000;" text="MoveSpeed">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Button>
+            <Text fill="WHITE" layoutX="175.0" layoutY="71.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Aumenta la Velocidad de Movimiento" textAlignment="CENTER" wrappingWidth="164.99999999999994">
+               <font>
+                  <Font size="17.0" />
+               </font>
+            </Text>
+            <ImageView fitHeight="131.0" fitWidth="124.0" layoutX="14.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@assets/images/upgrade_speed.png" />
+               </image>
+            </ImageView>
+            <Text fx:id="moveSpeedTooltip" fill="#19fc00" layoutX="148.0" layoutY="130.0" strokeType="OUTSIDE" strokeWidth="0.0" text="actual --&gt; mejorado" textAlignment="CENTER" wrappingWidth="220.0">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Text>
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="543.0" layoutY="166.0" prefHeight="160.0" prefWidth="379.0" style="-fx-border-color: green; -fx-border-width: 5; -fx-background-color: teal;">
+         <children>
+            <ImageView fitHeight="150.0" fitWidth="158.0" layoutX="-7.0" layoutY="-2.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@assets/images/upgrade-healing.png" />
+               </image>
+            </ImageView>
+            <Text fill="WHITE" layoutX="175.0" layoutY="71.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Aumenta la Regeneracion de Vida" textAlignment="CENTER" wrappingWidth="164.99999999999994">
+               <font>
+                  <Font size="17.0" />
+               </font>
+            </Text>
+             <Button fx:id="upgradeOption4" layoutX="142.0" layoutY="5.0" prefHeight="50.0" prefWidth="220.0" style="-fx-base: #FF0000;" text="HP Regen">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Button>
+            <Text fx:id="hpRegenTooltip" fill="#19fc00" layoutX="148.0" layoutY="130.0" strokeType="OUTSIDE" strokeWidth="0.0" text="actual --&gt; mejorado" textAlignment="CENTER" wrappingWidth="220.0">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Text>
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="118.0" layoutY="166.0" prefHeight="160.0" prefWidth="372.0" style="-fx-border-color: green; -fx-border-width: 5; -fx-background-color: teal;">
+         <children>
+            <Text fill="WHITE" layoutX="175.0" layoutY="71.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Aumenta la Vida Maxima" textAlignment="CENTER" wrappingWidth="164.99999999999994">
+               <font>
+                  <Font size="17.0" />
+               </font>
+            </Text>
+            <ImageView fitHeight="131.0" fitWidth="131.0" layoutX="6.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@assets/images/upgrade_health.png" />
+               </image>
+            </ImageView>
+             <Button fx:id="upgradeOption3" layoutX="148.0" layoutY="5.0" prefHeight="50.0" prefWidth="220.0" style="-fx-base: #FF0000;" text="Max HP">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Button>
+            <Text fx:id="hpTooltip" fill="#19fc00" layoutX="148.0" layoutY="130.0" stroke="#cd5252" strokeType="OUTSIDE" strokeWidth="0.0" text="actual --&gt; mejorado" textAlignment="CENTER" wrappingWidth="220.0">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Text>
+         </children>
+      </AnchorPane>
+      <Text fx:id="availableSkillPointText" fill="WHITE" layoutX="696.0" layoutY="140.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Puntos Disponibles: 0">
+         <font>
+            <Font name="System Bold" size="26.0" />
+         </font>
+      </Text>
+      <Button fx:id="resumeButton" layoutX="402.0" layoutY="689.0" prefHeight="50.0" prefWidth="220.0" style="-fx-base: #FF0000;" text="Reanudar">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Button>
+   </children>
+</AnchorPane>
