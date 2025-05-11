@@ -7,7 +7,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="768.0" prefWidth="1024.0" style="-fx-background-color: #2D2D2D;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controlador.SceneControllers.UpgradeMenuController">
+<AnchorPane prefHeight="768.0" prefWidth="1024.0" style="-fx-background-color: #2D2D2D;" xmlns="http://javafx.com/javafx/8.0.202" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controlador.SceneControllers.UpgradeMenuController">
    <children>
        <Text layoutX="300.0" layoutY="72.0" style="-fx-fill: #FFFFFF;" text="MENU DE MEJORAS" textAlignment="CENTER" wrappingWidth="438.511962890625">
          <font>

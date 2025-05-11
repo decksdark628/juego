@@ -1,14 +1,7 @@
 package Controlador.Utils;
 
-import Controlador.Entities.Player;
-import Controlador.Entities.Enemy3;
-import Controlador.Entities.Enemy;
-import Controlador.Projectiles.PlayerProjectile;
-import Controlador.Projectiles.Projectile;
-import Controlador.Projectiles.EnemyProjectile;
-import Controlador.Entities.EnemySprite;
-import Controlador.Projectiles.ProjectileView;
-
+import Controlador.Entities.*;
+import Controlador.Projectiles.*;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 
@@ -20,15 +13,18 @@ public class ProjectileManager {
     private final List<EnemyProjectile> enemyProjectiles;
     private final Player player;
     private final AnchorPane gamePane;
+    private final SoundManager soundManager;
 
     public ProjectileManager(List<PlayerProjectile> playerProjectiles,
                              List<EnemyProjectile> enemyProjectiles,
                              Player player,
-                             AnchorPane gamePane) {
+                             AnchorPane gamePane,
+                             SoundManager soundManager) {
         this.playerProjectiles = playerProjectiles;
         this.enemyProjectiles = enemyProjectiles;
         this.player = player;
         this.gamePane = gamePane;
+        this.soundManager = soundManager;
     }
 
     public void updateProjectiles() {
@@ -103,7 +99,9 @@ public class ProjectileManager {
         if (enemy.isDead()) {
             if (enemy instanceof Enemy3) {
                 ((Enemy3) enemy).onDeath(player, enemies);
+                soundManager.playExplosion();
             }
+            soundManager.playEnemyDeath();
             player.addScore(enemy.getPoints());
             player.addAuxScore(enemy.getPoints());
             removeEnemyFromScene(enemy);

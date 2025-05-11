@@ -1,13 +1,16 @@
 package Controlador.Utils;
 
-import Controlador.GameEngine;
-import Controlador.SceneControllers.MainGameScreenController;
 import Controlador.Entities.Player;
 import Controlador.Projectiles.PlayerProjectile;
-import Controlador.Entities.PlayeSprite;
+import Controlador.Entities.PlayerSprite;
 import Controlador.Projectiles.ProjectileView;
+import Controlador.SceneControllers.MainGameScreenController;
+import Controlador.GameEngine;
 
+
+import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 
@@ -15,21 +18,24 @@ public class InputHandler {
 
     private double dx = 0;
     private double dy = 0;
+    private boolean isReloading = false;
 
     private Player player;
-    private PlayeSprite playerView;
+    private PlayerSprite playerView;
     private GameEngine gameEngine;
     private AnchorPane rootPane;
-    private MainGameScreenController gameController;
+    private MainGameScreenController mainGameScreenController;
     private UIManager uiManager;
+    private SoundManager soundManager;
 
-    public InputHandler(Player player, PlayeSprite playerView, GameEngine gameEngine, AnchorPane rootPane, MainGameScreenController gameController, UIManager uiManager) { 
+    public InputHandler(Player player, PlayerSprite playerView, GameEngine gameEngine, AnchorPane rootPane, MainGameScreenController mainGameScreenController, UIManager uiManager) { 
         this.player = player;
         this.playerView = playerView;
         this.gameEngine = gameEngine;
         this.rootPane = rootPane;
-        this.gameController = gameController;
+        this.mainGameScreenController = mainGameScreenController;
         this.uiManager = uiManager;
+        this.soundManager = new SoundManager(); 
         setupInputHandlers();
     }
 
@@ -58,7 +64,7 @@ public class InputHandler {
         rootPane.requestFocus();
     }
 
-    private void handleKeyPressed(javafx.scene.input.KeyEvent e) {
+    private void handleKeyPressed(KeyEvent e) {
         KeyCode code = e.getCode();
         switch (code) {
             case W:
@@ -74,19 +80,26 @@ public class InputHandler {
                 dx = 1;
                 break;
             case SPACE:
-                gameController.pauseGame();
+                mainGameScreenController.pauseGame();
                 break;
-                case R: 
+            case R: 
+                if(!player.isReloading()){
                 player.reload();
-                uiManager.updateAmmunitionText();
-                break;                
+                    if(player.isReloading()){
+                    soundManager.playPlayerReloading(player.getReloadTime()); 
+                    }
+                }
+                break;
+            case TAB: 
+                mainGameScreenController.showUpgradeMenu();
+                break;
             default:
                 break;
         }
         e.consume();
     }
 
-    private void handleKeyReleased(javafx.scene.input.KeyEvent e) {
+    private void handleKeyReleased(KeyEvent e) {
         KeyCode code = e.getCode();
         switch (code) {
             case W:
@@ -109,9 +122,9 @@ public class InputHandler {
 
 
     private void handleMouseClick(double mouseX, double mouseY) {
-        if (player.Canshoot()) { 
-            javafx.geometry.Point2D spawn = playerView.getProjectileSpawnPoint();
-            javafx.geometry.Point2D target = calculateWorldCoordinates(mouseX, mouseY);
+        if (player.canShoot()) { 
+            Point2D spawn = playerView.getProjectileSpawnPoint();
+            Point2D target = calculateWorldCoordinates(mouseX, mouseY);
     
             PlayerProjectile proj = createPlayerProjectile(spawn, target);
             ProjectileView view = new ProjectileView(proj, true);
@@ -119,16 +132,24 @@ public class InputHandler {
             gameEngine.addPlayerProjectile(proj, view);
     
             uiManager.updateAmmunitionText(); 
+            soundManager.playPlayerShooting();
+            isReloading = false;
         } 
+        else if (!player.canShoot()) {
+            if(!isReloading) {   
+                soundManager.playPlayerReloading(player.getReloadTime());
+                isReloading = true;
+            }
+        }       
     }
 
-    private javafx.geometry.Point2D calculateWorldCoordinates(double mouseX, double mouseY) {
+    private Point2D calculateWorldCoordinates(double mouseX, double mouseY) {
         double worldX = mouseX - rootPane.getTranslateX();
         double worldY = mouseY - rootPane.getTranslateY();
-        return new javafx.geometry.Point2D(worldX, worldY);
+        return new Point2D(worldX, worldY);
     }
 
-    private PlayerProjectile createPlayerProjectile(javafx.geometry.Point2D spawn, javafx.geometry.Point2D target) {
+    private PlayerProjectile createPlayerProjectile(Point2D spawn, Point2D target) {
         return new PlayerProjectile(
             spawn.getX(),
             spawn.getY(),

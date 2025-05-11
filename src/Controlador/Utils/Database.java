@@ -12,13 +12,13 @@ public class Database {
     private static boolean tablesFound;
        
     public static void init() {
-        dbConnection = new Gestor_conexion_POSTGRE(Config.DATABASE_NAME, true);
+        /*dbConnection = new Gestor_conexion_POSTGRE(Config.DATABASE_NAME, true);
         try {
             tablesFound = allTablesExist(Config.DATABASE_TABLES);
         }
         catch (Error e){
             tablesFound = false;
-        }  
+        } */ 
     }
     
     public static boolean allTablesExist(String[] tables){

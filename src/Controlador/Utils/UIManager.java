@@ -1,12 +1,14 @@
 package Controlador.Utils;
 
 import Controlador.Entities.Player;
+
 import javafx.application.Platform;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.paint.Color;
 
 public class UIManager {
 
@@ -74,8 +76,18 @@ public class UIManager {
     }
 
     private void updateHealthUI() {
+        double healthPercentage = (double) player.getHp() / player.getMaxHp();
+
         updateHealthBar();
         updateHealthText();
+
+        if (healthPercentage <= 0.35) {
+            healthBar.setFill(Color.RED);
+            HPText.setFill(Color.RED);
+        } else {
+            healthBar.setFill(Color.LIMEGREEN);
+            HPText.setFill(Color.LIMEGREEN);
+        }
     }
     private void updateHealthText() {
         HPText.setText(player.getHp() + "/" + player.getMaxHp());
@@ -92,7 +104,7 @@ public class UIManager {
         updateAmmunitionText();
         updateSkillPointText();
     }
-    
+
     private void updateScoreText() {
         scoreText.setText("Puntuación: " + player.getScore());
     }
@@ -102,7 +114,7 @@ public class UIManager {
         int seconds = elapsedSeconds % 60;
         timerText.setText(String.format("%02d:%02d", minutes, seconds));
     }
-    
+
     private void updateSkillPointText() {
         skillPointText.setText("Puntos de habilidad: " + player.getSkillPoints());
     }

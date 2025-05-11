@@ -1,9 +1,9 @@
 package Controlador.Projectiles;
 
+import Modelo.ImagePaths;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import Controlador.Projectiles.Projectile;
-import Modelo.ImagePaths;
 
 public class ProjectileView extends ImageView {
     private Projectile projectileModel;

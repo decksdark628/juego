@@ -1,18 +1,11 @@
 package Controlador;
 
-import Controlador.Utils.ProjectileManager;
-import Controlador.Entities.Player;
-import Controlador.Entities.Enemy3;
-import Controlador.Entities.Enemy;
-import Controlador.Projectiles.PlayerProjectile;
-import Controlador.Projectiles.EnemyProjectile;
+import Controlador.Entities.*;
+import Controlador.Projectiles.*;
+import Controlador.Utils.*;
+
 import Modelo.GameConstants;
-import Controlador.Entities.EnemySprite;
-import Controlador.Entities.PlayeSprite;
-import Controlador.Projectiles.ProjectileView;
-import Controlador.Utils.ProjectileManager;
-import Controlador.Utils.ProjectileManager;
-import Controlador.Utils.ProjectileManager;
+
 
 import javafx.scene.layout.AnchorPane;
 
@@ -21,13 +14,14 @@ import java.util.*;
 public class GameEngine {
 
     private Player player;
-    private PlayeSprite playerView;
+    private PlayerSprite playerView;
     private List<Enemy> enemies;
     private List<PlayerProjectile> playerProjectiles;
     private List<EnemyProjectile> enemyProjectiles;
     private ProjectileManager projectileManager;
     private AnchorPane rootPane;
     private int elapsedSeconds;
+    private SoundManager soundManager;
 
     public GameEngine(AnchorPane rootPane) {
         this.rootPane = rootPane;
@@ -35,20 +29,21 @@ public class GameEngine {
         this.playerProjectiles = new ArrayList<>();
         this.enemyProjectiles = new ArrayList<>();
         this.elapsedSeconds = 0;
+        this.soundManager = new SoundManager();
 
         createPlayer();
-        this.projectileManager = new ProjectileManager(playerProjectiles, enemyProjectiles, player, rootPane);
+        this.projectileManager = new ProjectileManager(playerProjectiles, enemyProjectiles, player, rootPane, soundManager);
     }
 
     private void createPlayer() {
         player = new Player(GameConstants.MAP_WIDTH / 2, GameConstants.MAP_HEIGHT / 2);
-        playerView = new PlayeSprite(player, rootPane);
+        playerView = new PlayerSprite(player, rootPane);
         rootPane.getChildren().add(playerView);
         playerView.toFront();
     }
 
     public Player getPlayer() { return player;}
-    public PlayeSprite getPlayerView() { return playerView;}
+    public PlayerSprite getPlayerView() { return playerView;}
     public List<Enemy> getEnemies() {return enemies;}
     public List<PlayerProjectile> getPlayerProjectiles() { return playerProjectiles; }
     public List<EnemyProjectile> getEnemyProjectiles() { return enemyProjectiles;}
@@ -58,9 +53,9 @@ public class GameEngine {
         elapsedSeconds++;
     }
 
-    public void updatePlayerMovement(double dx, double dy) {
+    public void updatePlayerMovement(double dx, double dy, double deltaTime) {
         handlePlayerInput(dx, dy);
-        movePlayer();
+        movePlayer(deltaTime);
     }
 
     private void handlePlayerInput(double dx, double dy) {
@@ -70,19 +65,30 @@ public class GameEngine {
         player.setMovementKeyPressed("D", dx > 0);
     }
 
-    private void movePlayer() {
-        player.move();
+    private void movePlayer(double deltaTime) {
+        player.move(deltaTime);
         playerView.update();
     }
 
-    public void updateEnemies() {
+    public void updateEnemies(double deltaTime) {
         Iterator<Enemy> iterator = enemies.iterator();
         while (iterator.hasNext()) {
             Enemy enemy = iterator.next();
-            if (!enemy.update(player.getX(), player.getY(), player, enemies)) {
+            if (!enemy.update(player.getX(), player.getY(), player, enemies, deltaTime)) {
                 if (enemy instanceof Enemy3) {
                     ((Enemy3) enemy).onDeath(player, enemies);
+                    soundManager.playExplosion();
+                    double centerEnemyX = enemy.getX() + enemy.getWidth() / 2.0;
+                    double centerEnemyY = enemy.getY() + enemy.getHeight() / 2.0;
+                    double centerPlayerX = player.getX() + player.getWidth() / 2.0;
+                    double centerPlayerY = player.getY() + player.getHeight() / 2.0;
+                    double distance = Math.hypot(centerPlayerX - centerEnemyX, centerPlayerY - centerEnemyY);
+                    if (distance <= ((Enemy3) enemy).getExplosionRadius()) {
+                        soundManager.playPlayerDamage();
+                        playerView.flashRed();
+                    }
                 }
+                soundManager.playEnemyDeath();
                 removeEnemyFromScene(enemy);
                 iterator.remove();
             }
@@ -109,6 +115,15 @@ public class GameEngine {
                     EnemySprite enemyView = findEnemyView(enemy3);
                     if (enemyView != null) {
                         enemyView.showExplosion(enemy3.getExplosionRadius());
+                        soundManager.playExplosion();
+                        double cEx = enemy3.getX() + enemy3.getWidth()/2.0;
+                        double cEy = enemy3.getY() + enemy3.getHeight()/2.0;
+                        double cPx = player.getX() + player.getWidth()/2.0;
+                        double cPy = player.getY() + player.getHeight()/2.0;
+                        if (Math.hypot(cPx - cEx, cPy - cEy) <= enemy3.getExplosionRadius()) {
+                            soundManager.playPlayerDamage();
+                            playerView.flashRed();
+                        }
                         enemy3.setExplodedVisual(true);
                     }
                 }
@@ -132,7 +147,7 @@ public class GameEngine {
         }
     }
 
-    public void updateProjectiles() {
+    public void updateProjectiles(double deltaTime) {
         projectileManager.updateProjectilesViews();
     }
 
@@ -150,6 +165,8 @@ public class GameEngine {
         for (Enemy enemy : enemies) {
             if (player.collidesWith(enemy) && enemy.canDamagePlayer()) {
                 player.hit(enemy.getDamage()); 
+                soundManager.playPlayerDamage();   
+                playerView.flashRed();
             }
         }
     }
@@ -160,6 +177,8 @@ public class GameEngine {
             EnemyProjectile projectile = iterator.next();
             if (player.collidesWith(projectile)) {
                 player.hit(projectile.getDamage()); 
+                soundManager.playPlayerDamage();
+                playerView.flashRed();
                 removeProjectileFromScene(projectile); 
                 iterator.remove(); 
             }
@@ -184,11 +203,11 @@ public class GameEngine {
         rootPane.getChildren().add(view);
     }
 
-    public void updateGame() {
+    public void updateGame(double deltaTime) {
         incrementElapsedSeconds();
-        updatePlayerMovement(0, 0); 
-        updateEnemies(); 
-        updateProjectiles(); 
+        updatePlayerMovement(0, 0, deltaTime); 
+        updateEnemies(deltaTime); 
+        updateProjectiles(deltaTime); 
         checkCollisions(); 
         regeneratePlayerHp(); 
     }

@@ -16,20 +16,18 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.animation.KeyFrame;
 
+import Modelo.ImagePaths;
+import Modelo.ScenePaths;
+import Modelo.SoundPaths;
 import Modelo.GameConstants;
 import Controlador.Cursor;
-import Controlador.EnemySpawner;
 import Controlador.GameEngine;
-import Controlador.Utils.Database;
-import Controlador.Utils.UIManager;
-import Controlador.Utils.InputHandler;
-import Controlador.Utils.SceneManager;
-import Controlador.Utils.TimestampGenerator;
-import Modelo.ImagePaths;
-import Modelo.PlayerSessionData;
-import Modelo.ScenePaths;
-
+import Controlador.EnemySpawner;
+import Controlador.Utils.*;
 
 import java.io.IOException;
 
@@ -37,7 +35,6 @@ import java.io.IOException;
 public class MainGameScreenController {
     
     @FXML private AnchorPane rootPane;
-    @FXML private AnchorPane gamePane;
     @FXML private TilePane backgroundTiles;
     @FXML private Text HPText;
     @FXML private VBox healthBarContainer;
@@ -51,21 +48,30 @@ public class MainGameScreenController {
     @FXML private ProgressBar ammunitionBar;
     @FXML private Text ammunitionText; 
     @FXML private Text skillPointText;
+    
+   
 
     private GameEngine gameEngine;
     private InputHandler inputHandler;
-    private EnemySpawner enemySpawner;
     private UIManager uiManager;
+    private SoundManager soundManager;
+    private BackgroundMusic backgroundMusic;
+    private EnemySpawner enemySpawner;
 
     private AnimationTimer gameLoop;
     private Timeline gameTimer;
     private Timeline enemySpawnerTimeline;
+    
+    private long lastFrameTime = 0;
+
+    private BackgroundMusic gameOverMusic;
 
     public void initialize() {
         initializeBackground();
         initializeGameComponents();
         initializeTimers();
         requestFocusOnRootPane();
+              
     }
 
     private void initializeGameComponents() {
@@ -73,17 +79,20 @@ public class MainGameScreenController {
         initializeUIManager();
         initializeInputHandler();
         initializeEnemySpawner();
+        initializeSoundManager();
+        setBackgroundMusic();  
+        
     }
 
     private void initializeBackground() {
         try {
-            javafx.scene.image.Image tileImage = new javafx.scene.image.Image(getClass().getResourceAsStream(ImagePaths.GROUND_TEXTURE));
+            Image tileImage = new Image(getClass().getResourceAsStream(ImagePaths.GROUND_TEXTURE));
             int tilesX = (int) Math.ceil(GameConstants.MAP_WIDTH / GameConstants.TILE_SIZE);
             int tilesY = (int) Math.ceil(GameConstants.MAP_HEIGHT / GameConstants.TILE_SIZE);
             backgroundTiles.getChildren().clear();
             for (int y = 0; y < tilesY; y++) {
                 for (int x = 0; x < tilesX; x++) {
-                    javafx.scene.image.ImageView tile = new javafx.scene.image.ImageView(tileImage);
+                    ImageView tile = new ImageView(tileImage);
                     tile.setFitWidth(GameConstants.TILE_SIZE);
                     tile.setFitHeight(GameConstants.TILE_SIZE);
                     tile.setX(x * GameConstants.TILE_SIZE);
@@ -96,7 +105,7 @@ public class MainGameScreenController {
         }
     }
 
-     private void initializeGameEngine() {
+    private void initializeGameEngine() {
         gameEngine = new GameEngine(rootPane);
     }
 
@@ -110,13 +119,17 @@ public class MainGameScreenController {
     }
 
     private void initializeEnemySpawner() {
-        enemySpawner = new EnemySpawner(gameEngine.getEnemies(), gameEngine.getEnemyProjectiles(), gameEngine);
+       enemySpawner = new EnemySpawner(/*gameEngine.getEnemies(), */gameEngine.getEnemyProjectiles(), gameEngine);
+    }
+
+    
+    private void initializeSoundManager() {
+        soundManager = new SoundManager();
     }
 
     private void initializeTimers() {
         setupGameTimer();
         setupGameLoop();
-        startEnemySpawner();
     }
 
     private void requestFocusOnRootPane() {
@@ -127,14 +140,26 @@ public class MainGameScreenController {
         gameLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                updateGame();
+                if (lastFrameTime == 0) {
+                    lastFrameTime = now;
+                    return;
+                }
+                
+                double deltaTime = (now - lastFrameTime) / 1_000_000_000.0; 
+                lastFrameTime = now;
+                
+                if (deltaTime > 0.1) {
+                    deltaTime = 0.1;
+                }
+                
+                updateGame(deltaTime);
             }
         };
         gameLoop.start();
     }
 
     private void setupGameTimer() {
-        gameTimer = new Timeline(new javafx.animation.KeyFrame(Duration.seconds(1), e -> {
+        gameTimer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             gameEngine.incrementElapsedSeconds();
             uiManager.updateUI(gameEngine.getElapsedSeconds());
         }));
@@ -142,31 +167,24 @@ public class MainGameScreenController {
         gameTimer.play();
     }
 
-    private void startEnemySpawner() {
-        enemySpawnerTimeline = new Timeline(new javafx.animation.KeyFrame(Duration.seconds(1), e -> {
-            enemySpawner.spawnEnemies(gameEngine.getElapsedSeconds());
-        }));
-        enemySpawnerTimeline.setCycleCount(Timeline.INDEFINITE);
-        enemySpawnerTimeline.play();
-    }
-
-    private void updateGame() {
-        updatePlayerMovement();
+    private void updateGame(double deltaTime) {
+        updatePlayerMovement(deltaTime);
         updateCamera();
-        updateEntities();
+        updateEntities(deltaTime);
         checkCollisions();
         updateUI();
         checkGameOver();
-        //checkLvlUp();
+        checkLvlUp();
+        gameEngine.regeneratePlayerHp();
     }
 
-    private void updatePlayerMovement() {
-        gameEngine.updatePlayerMovement(inputHandler.getDx(), inputHandler.getDy());
+    private void updatePlayerMovement(double deltaTime) {
+        gameEngine.updatePlayerMovement(inputHandler.getDx(), inputHandler.getDy(), deltaTime);
     }
 
-    private void updateEntities() {
-        gameEngine.updateEnemies();
-        gameEngine.updateProjectiles();
+    private void updateEntities(double deltaTime) {
+        gameEngine.updateEnemies(deltaTime);
+        gameEngine.updateProjectiles(deltaTime);
     }
 
     private void checkCollisions() {
@@ -179,15 +197,17 @@ public class MainGameScreenController {
 
     private void checkGameOver() {
         if (gameEngine.getPlayer().isDead()) {
+            soundManager.playPlayerDeath();
             gameOver();
         }
     }
     
-    /*private void checkLvlUp() {
-        if (gameEngine.getPlayer() != null && gameEngine.getPlayer().hasSkillPointsToSpend()){
-            showUpgradeMenu();
+    private void checkLvlUp() {
+        if (gameEngine.getPlayer().hasLeveledUp()){
+            soundManager.playPlayerLvlUp();
+            gameEngine.getPlayerView().flashYellow();
         }
-    }*/
+    }
 
     private void updatePlayerUI() {
         uiManager.updateUI(gameEngine.getElapsedSeconds());
@@ -202,7 +222,6 @@ public class MainGameScreenController {
 
         healthBarContainer.setLayoutX(healthBarX);
         healthBarContainer.setLayoutY(healthBarY);
-        gameEngine.regeneratePlayerHp();
     }
 
     private void updateCamera() {
@@ -258,24 +277,23 @@ public class MainGameScreenController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(ScenePaths.PAUSE_MENU));
             Parent root = loader.load();
             PauseController controller = loader.getController();
-            
-            controller.setGameEngine(gameEngine); //añadi esto porque sino me daba null pointer exception al entrar al menu de mejoras
             controller.setStage((Stage) rootPane.getScene().getWindow());
             controller.setGameScene(rootPane.getScene());
             controller.setGameTimers(gameLoop, gameTimer, enemySpawnerTimeline);
+            controller.setGameEngine(gameEngine);
+            controller.setBackgroundMusic(backgroundMusic);
 
             Scene pauseScene = new Scene(root, 1024, 768);
             Cursor.applyCustomCursor(pauseScene); 
             ((Stage) rootPane.getScene().getWindow()).setScene(pauseScene);
+
+            backgroundMusic.pause();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private void gameOver() {
-        PlayerSessionData.setLocalScore(gameEngine.getPlayer().getScore());
-        PlayerSessionData.setDeathTimestamp(TimestampGenerator.generate());
-        Database.sendPlayerScore();
         stopGame();
         loadGameOverScene();
     }
@@ -287,20 +305,23 @@ public class MainGameScreenController {
     }
 
     private void loadGameOverScene() {
-        SceneManager.goToScene(ScenePaths.GAME_OVER);
-//        try {
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource(ScenePaths.GAME_OVER));
-//            Parent root = loader.load();
-//            Scene2Controller controller = loader.getController();
-//            controller.setFinalScore(gameEngine.getPlayer().getScore());
-//            controller.setPrimaryStage((Stage) rootPane.getScene().getWindow());
-//
-//            Scene gameOverScene = new Scene(root, 1024, 768);
-//            Cursor.applyCustomCursor(gameOverScene); 
-//            ((Stage) rootPane.getScene().getWindow()).setScene(gameOverScene);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(ScenePaths.GAME_OVER));
+            Parent root = loader.load();
+            AltGameOverController controller = loader.getController();
+            controller.setFinalScore(gameEngine.getPlayer().getScore());
+            controller.setPrimaryStage((Stage) rootPane.getScene().getWindow());
+
+            Scene gameOverScene = new Scene(root, 1024, 768);
+            Cursor.applyCustomCursor(gameOverScene); 
+            ((Stage) rootPane.getScene().getWindow()).setScene(gameOverScene);
+
+            backgroundMusic.stop();
+            gameOverMusic = new BackgroundMusic(SoundPaths.GAME_OVER_TRACK);
+            controller.setGameOverMusic(gameOverMusic);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
      private void loadUpgradeMenu() {
@@ -314,22 +335,32 @@ public class MainGameScreenController {
 
             controller.setPlayer(gameEngine.getPlayer()); 
             controller.setStage(currentStage);            
-            controller.setGameScene(currentGameScene);   
+            controller.setGameScene(currentGameScene);
+            
             
 
             controller.setGameTimers(gameLoop, gameTimer, enemySpawnerTimeline);
+            controller.setBackgroundMusic(backgroundMusic);
 
-            Scene upgradeScene = new Scene(upgradeRoot, currentGameScene.getWidth(), currentGameScene.getHeight()); // Usa las dimensiones actuales
+            Scene upgradeScene = new Scene(upgradeRoot, currentGameScene.getWidth(), currentGameScene.getHeight()); 
             Cursor.applyCustomCursor(upgradeScene); 
             currentStage.setScene(upgradeScene);
+            backgroundMusic.pause();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     
-    private void showUpgradeMenu() {
+    public void showUpgradeMenu() {
         stopGameTimers();
         loadUpgradeMenu();
-    }     
+    }
+
+    public void setBackgroundMusic() {
+        this.backgroundMusic = new BackgroundMusic();
+        backgroundMusic.play();
+    }
+    
+        
 }

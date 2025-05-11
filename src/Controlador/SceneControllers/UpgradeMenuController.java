@@ -2,6 +2,8 @@ package Controlador.SceneControllers;
 
 import Controlador.Entities.Player;
 import Controlador.Cursor;
+import Controlador.Utils.BackgroundMusic;
+import Controlador.Utils.SoundManager;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -11,6 +13,8 @@ import javafx.stage.Stage;
 import javafx.animation.AnimationTimer;
 import javafx.animation.Timeline;      
 import javafx.scene.text.Text;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.KeyCode;
 
 public class UpgradeMenuController {
 
@@ -32,20 +36,24 @@ public class UpgradeMenuController {
     private Stage stage;
     private Scene gameScene; 
     private Player player;   
+    private BackgroundMusic backgroundMusic;
+    private BackgroundMusic menuMusic;
 
     private AnimationTimer gameLoop;
     private Timeline gameTimer;
     private Timeline enemySpawnerTimeline;
+    private SoundManager soundManager;
     
     
     private int hp=10;
     private int hpRegen=1;
     private double speed=0.5;
     private int ammo=1;
-    private int damage=1;
+    private int damage=5;
     private long reload=250;
 
     public void initialize() {
+        this.soundManager = new SoundManager();
         setupUpgradeButtons();
         setupResumeButton();
     }
@@ -67,12 +75,22 @@ public class UpgradeMenuController {
             upgradeOption5.setDisable(false);
             upgradeOption6.setDisable(false);
         }
-                updateText();
+        updateText();
     }
     
 
     public void setStage(Stage stage) {
         this.stage = stage;
+        Platform.runLater(() -> {
+            if (this.stage != null && this.stage.getScene() != null) {
+                this.stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+                    if (event.getCode() == KeyCode.TAB || event.getCode() == KeyCode.SPACE) {
+                        resumeGame();
+                        event.consume();
+                    }
+                });
+            }
+        });
     }
 
     public void setGameScene(Scene gameScene) {
@@ -85,46 +103,74 @@ public class UpgradeMenuController {
         this.enemySpawnerTimeline = enemySpawnerTimeline; 
     }
 
+    public void setBackgroundMusic(BackgroundMusic backgroundMusic) {
+        if (backgroundMusic != null) {
+            backgroundMusic.pause();
+        }
+        this.backgroundMusic = backgroundMusic;
+
+        menuMusic = BackgroundMusic.getMenuMusic();
+        menuMusic.play();
+    }
+
     private void setupUpgradeButtons() {
         upgradeOption1.setOnAction(event -> {
             if (player != null && player.getSkillPoints() > 0) {
                 player.increaseSpeed(speed);
+                soundManager.playUpgradeSuccess();
                 updateText();
-            } 
+            } else {
+                soundManager.playUpgradeError();
+            }
         });
 
         upgradeOption2.setOnAction(event -> {
             if (player != null && player.getSkillPoints() > 0) {
                 player.upgradeDamage(damage);
+                soundManager.playUpgradeSuccess();
                 updateText();
-            } 
+            } else {
+                soundManager.playUpgradeError();
+            }
         });
 
         upgradeOption3.setOnAction(event -> {
             if (player != null && player.getSkillPoints() > 0) {
                 player.upgradeMaxHp(hp);
                 player.increaseHealth(hp);
+                soundManager.playUpgradeSuccess();
                 updateText();
-            } 
+            } else {
+                soundManager.playUpgradeError();
+            }
         });
         upgradeOption4.setOnAction(event -> {
             if (player != null && player.getSkillPoints() > 0) {
                 player.upgradeHpRegen(hpRegen);
+                soundManager.playUpgradeSuccess();
                 updateText();
+            } else {
+                soundManager.playUpgradeError();
             }
         });
     
         upgradeOption5.setOnAction(event -> {
             if (player != null && player.getSkillPoints() > 0) {
                 player.upgradeMaxAmmunition(ammo);
+                soundManager.playUpgradeSuccess();
                 updateText();
+            } else {
+                soundManager.playUpgradeError();
             }
         });
     
         upgradeOption6.setOnAction(event -> {
             if (player != null && player.getSkillPoints() > 0) {
                 player.upgradeReloadTime(reload); 
+                soundManager.playUpgradeSuccess();
                 updateText();
+            } else {
+                soundManager.playUpgradeError();
             }
         });
         
@@ -132,6 +178,7 @@ public class UpgradeMenuController {
     
     private void setupResumeButton() {
         resumeButton.setOnAction(event ->{
+            soundManager.playButton();
             resumeGame();
         }); 
     }
@@ -155,6 +202,12 @@ public class UpgradeMenuController {
                     gameScene.getRoot().requestFocus();
                 } 
                  Cursor.applyCustomCursor(gameScene);
+                 if (menuMusic != null) {
+                     menuMusic.pause();
+                 }
+                 if (backgroundMusic != null) {
+                     backgroundMusic.play();
+                 }
             });
         }
     }
@@ -164,7 +217,11 @@ public class UpgradeMenuController {
     }
     
     private void updateReloadTimeTooltip(){
-        reloadTimeTooltip.setText(player.getReloadTime()+"ms"+" --> "+(player.getReloadTime()-reload)+"ms");
+        if(player.getReloadTime()  <= 250){
+            reloadTimeTooltip.setText(player.getReloadTime()+"ms"+" --> "+player.getReloadTime()+"ms");
+        } else {
+            reloadTimeTooltip.setText(player.getReloadTime()+"ms"+" --> "+(player.getReloadTime()-reload)+"ms");
+        }
     }
     
     private void updateAmmoToolTip(){

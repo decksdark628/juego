@@ -4,7 +4,7 @@ public abstract class Config {
     public static final int WINDOW_WIDTH = 1024;
     public static final int WINDOW_HEIGHT = 768;
     
-    public static final int START_SCREEN = 0;
+    public static final int START_SCREEN = 1;
     
     public static final String GAME_TITLE = "Proyecto Intermodular";
     public static final String DATABASE_NAME = "juego";

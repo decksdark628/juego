@@ -13,29 +13,29 @@ public class Enemy2 extends Enemy {
     private double initialSpeed=getSpeed();
     
     public Enemy2(double x, double y, List<EnemyProjectile> enemyProjectiles) {
-        super(x, y, 65, 65, 1.0, 2, 15, 15, 1, 3, 5);
+        super(x, y, 65, 65, (1.5*GameConstants.N), 15, 15, 25);
         this.enemyProjectiles = enemyProjectiles;
         this.minShootDistance = 300;
         this.maxShootDistance = 550;
-        this.shootInterval = 2200;
+        this.shootInterval = 2800;
         this.isMovingAway = false;
     }
 
     @Override
-    public void updateMovement(double playerX, double playerY, List<Enemy> allEnemies) {
+    public void updateMovement(double playerX, double playerY, List<Enemy> allEnemies, double deltaTime) {
         double distance = calculateDistance(playerX, playerY);
         isMovingAway = false;
 
         if (shouldMoveAway(distance)) {
             if (!isNearBoundaries()) {
-                moveAway(playerX, playerY, allEnemies);
+                moveAway(playerX, playerY, allEnemies, deltaTime);
             } else {
-                frenzy(playerX, playerY, allEnemies);
+                enterFrenzyMode(playerX, playerY, allEnemies, deltaTime);
             }
         } else if (shouldStopAndShoot(distance)) {
-            moveTowardsPlayer(playerX, playerY, allEnemies); 
+            moveTowardsPlayer(playerX, playerY, allEnemies, deltaTime); 
         } else {
-            moveTowardsPlayer(playerX, playerY, allEnemies);
+            moveTowardsPlayer(playerX, playerY, allEnemies, deltaTime);
         }
     }
 
@@ -54,7 +54,7 @@ public class Enemy2 extends Enemy {
     }
 
     @Override
-    public void updateAttacks(double playerX, double playerY, Player player, List<Enemy> allEnemies) {
+    public void updateAttacks(double playerX, double playerY, Player player, List<Enemy> allEnemies, double deltaTime) {
         if (canShootAtPlayer(playerX, playerY)) {
             prepareToShoot();
             if (enemyView != null) {
@@ -75,15 +75,25 @@ public class Enemy2 extends Enemy {
         speed = initialSpeed;
     }
     
-    private void moveAway(double playerX, double playerY, List<Enemy> allEnemies) {
+    private void moveAway(double playerX, double playerY, List<Enemy> allEnemies, double deltaTime) {
         double distance = calculateDistance(playerX, playerY);
         if (distance > 0) {
-            moveDx = (x - playerX) / distance * speed; 
-            moveDy = (y - playerY) / distance * speed;
+            double dx = (x - playerX) / distance;
+            double dy = (y - playerY) / distance;
+            
+            dx = dx * speed;
+            dy = dy * speed;
+            
+            dx *= deltaTime * 60.0;
+            dy *= deltaTime * 60.0;     
+
+            moveDx = dx;
+            moveDy = dy;
+                  
             updatePosition(moveDx, moveDy);
             isMovingAway = true;
         }
-    }
+    }   
 
     public void shoot(double playerX, double playerY, EnemySprite enemyView) {
         if (enemyProjectiles != null) {
@@ -105,18 +115,14 @@ public class Enemy2 extends Enemy {
     private void updateLastShotTime() {
         lastShotTime = System.currentTimeMillis();
     }
-    
-    private void frenzy(double playerX, double playerY, List<Enemy> allEnemies) { 
-        enterFrenzyMode(playerX, playerY, allEnemies);
-    }    
 
-    private void enterFrenzyMode(double playerX, double playerY, List<Enemy> allEnemies) {
+    private void enterFrenzyMode(double playerX, double playerY, List<Enemy> allEnemies, double deltaTime) {
         activateFrenzyMode();
-        moveTowardsPlayer(playerX, playerY, allEnemies);
+        moveTowardsPlayer(playerX, playerY, allEnemies, deltaTime);
     }
 
     private void activateFrenzyMode() {
-        speed = 3;
+        speed+= 1.5;
         minShootDistance = 0;
         maxShootDistance = 0;
     }

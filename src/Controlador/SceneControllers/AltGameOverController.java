@@ -1,6 +1,8 @@
 package Controlador.SceneControllers;
 
 import Controlador.Cursor;
+import Controlador.Utils.BackgroundMusic;
+import Controlador.Utils.SoundManager;
 import Modelo.ScenePaths;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -17,6 +19,7 @@ public class AltGameOverController {
     @FXML private Button exitButton;
 
     private Stage primaryStage;
+    private BackgroundMusic gameOverMusic;
 
     public void initialize() {
         setupRestartButton();
@@ -24,11 +27,17 @@ public class AltGameOverController {
     }
 
     private void setupRestartButton() {
-        restartButton.setOnAction(event -> restartGame());
+        restartButton.setOnAction(event -> {
+            new SoundManager().playButton();
+            restartGame();
+        });
     }
 
     private void setupExitButton() {
-        exitButton.setOnAction(event -> exitGame());
+        exitButton.setOnAction(event -> {
+            new SoundManager().playButton();
+            exitGame();
+        });
     }
 
     public void setFinalScore(int score) {
@@ -39,19 +48,29 @@ public class AltGameOverController {
         this.primaryStage = stage;
     }
 
+    public void setGameOverMusic(BackgroundMusic music) {
+        this.gameOverMusic = music;
+        if (gameOverMusic != null) {
+            gameOverMusic.play();
+        }
+    }
+
     @FXML
     private void restartGame() {
         try {
             Scene gameScene = loadGameScene();
             applyCustomCursor(gameScene);
             switchToScene(gameScene);
+            if (gameOverMusic != null) {
+                gameOverMusic.stop();
+            }
         } catch (Exception e) {
             handleSceneLoadingError(e);
         }
     }
 
     private Scene loadGameScene() throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(ScenePaths.GAME_SCREEN));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(ScenePaths.JULIANS_GAME_OVER));
         Parent root = loader.load();
         return new Scene(root, 1024, 768);
     }
@@ -75,6 +94,9 @@ public class AltGameOverController {
     }
 
     private void exitApplication() {
+        if (gameOverMusic != null) {
+            gameOverMusic.stop();
+        }
         Platform.exit();
     }
 }

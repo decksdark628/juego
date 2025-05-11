@@ -1,8 +1,12 @@
 package Controlador.SceneControllers;
 
-import Modelo.ScenePaths;
 import Controlador.Cursor;
 import Controlador.GameEngine;
+import Controlador.Utils.SoundManager;
+import Modelo.ScenePaths;
+import Controlador.Utils.BackgroundMusic;
+
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -24,6 +28,8 @@ public class PauseController {
     private Timeline gameTimer;
     private Timeline enemySpawner;
     private GameEngine gameEngine;
+    private BackgroundMusic backgroundMusic;
+    private BackgroundMusic menuMusic;
 
     public void initialize() {
         setupResumeButton();
@@ -32,15 +38,24 @@ public class PauseController {
     }
 
     private void setupResumeButton() {
-        resumeButton.setOnAction(event -> resumeGame());
+        resumeButton.setOnAction(event -> {
+            new SoundManager().playButton();
+            resumeGame();
+        });
     }
 
     private void setupExitButton() {
-        exitButton.setOnAction(event -> exitGame());
+        exitButton.setOnAction(event -> {
+            new SoundManager().playButton();
+            exitGame();
+        });
     }
 
     private void setupUpgradeMenuButton() {
-        upgradeMenuButton.setOnAction(event -> openUpgradeMenu());
+        upgradeMenuButton.setOnAction(event -> {
+            new SoundManager().playButton();
+            openUpgradeMenu();
+        });
     }
 
     public void setStage(Stage stage) {
@@ -61,11 +76,29 @@ public class PauseController {
         this.enemySpawner = enemySpawner;
     }
 
+    public void setBackgroundMusic(BackgroundMusic backgroundMusic) {
+        if (backgroundMusic != null) {
+            backgroundMusic.pause();
+        }
+        this.backgroundMusic = backgroundMusic;
+
+
+        menuMusic = BackgroundMusic.getMenuMusic();
+        menuMusic.play();
+    }
+
     @FXML
     private void resumeGame() {
         resumeGameLoop();
         resumeEnemySpawner();
         resumeGameTimer();
+
+        if (menuMusic != null) {
+            menuMusic.pause();
+        }
+        if (backgroundMusic != null) {
+            backgroundMusic.play();
+        }
         switchToGameScene();
     }
 
@@ -83,7 +116,6 @@ public class PauseController {
 
     private void resumeGameTimer() {
         if (gameTimer != null) {
-            gameTimer.stop(); 
             gameTimer.play(); 
         }
     }
@@ -111,11 +143,11 @@ public class PauseController {
 
             UpgradeMenuController controller = loader.getController();
 
-
             controller.setPlayer(gameEngine.getPlayer()); 
             controller.setStage(stage);
             controller.setGameScene(gameScene);
             controller.setGameTimers(gameLoop, gameTimer, enemySpawner);
+            controller.setBackgroundMusic(backgroundMusic);
 
             Scene upgradeScene = new Scene(upgradeRoot, gameScene.getWidth(), gameScene.getHeight());
             Cursor.applyCustomCursor(upgradeScene);

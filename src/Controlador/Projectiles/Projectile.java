@@ -52,4 +52,22 @@ public abstract class Projectile extends GameEntity {
     public boolean isActive() {
         return active;
     }
+
+    @Override
+    public boolean collidesWith(GameEntity other) {
+
+        double magnitude = Math.hypot(dx, dy);
+        if (magnitude == 0) {
+            return super.collidesWith(other);
+        }
+
+        double normX = dx / magnitude;
+        double normY = dy / magnitude;
+
+        double tipX = x + (width / 2) * normX;
+        double tipY = y + (height / 2) * normY;
+
+        return tipX >= other.getX() && tipX <= other.getX() + other.getWidth()
+            && tipY >= other.getY() && tipY <= other.getY() + other.getHeight();
+    }
 }

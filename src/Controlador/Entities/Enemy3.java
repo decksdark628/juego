@@ -2,26 +2,32 @@ package Controlador.Entities;
 
 import java.util.List;
 
+import Modelo.GameConstants;
+
 public class Enemy3 extends Enemy {
     
     private boolean exploded = false;
     private final double explosionTriggerDistance = 100.0;
     private final double explosionRadius = 200.0;
     private boolean explodedVisual = false;
+    private final double frenzyTriggerDistance = 500.0; 
+    private boolean frenzyActive = false;
     
     public Enemy3(double x, double y) {
-        super(x, y, 60, 60, 1.0, 
-              3, 40, 80, 
-              1, 10, 2);
+        super(x, y, 60, 60, (1.0*GameConstants.N), 25, 30, 60);
     }
 
     @Override
-    public void updateMovement(double playerX, double playerY, List<Enemy> allEnemies) {
-        moveTowardsPlayer(playerX, playerY, allEnemies);
+    public void updateMovement(double playerX, double playerY, List<Enemy> allEnemies, double deltaTime) {
+        if (!frenzyActive && isWithinFrenzyRange(playerX, playerY)) {
+            activateFrenzyMode();
+        }
+
+        moveTowardsPlayer(playerX, playerY, allEnemies, deltaTime);
     }
 
     @Override
-    public void updateAttacks(double playerX, double playerY, Player player, List<Enemy> allEnemies) {
+    public void updateAttacks(double playerX, double playerY, Player player, List<Enemy> allEnemies, double deltaTime) {
         if (exploded) return;
 
         if (isWithinExplosionTriggerDistance(playerX, playerY)) {
@@ -31,6 +37,18 @@ public class Enemy3 extends Enemy {
                 enemyView.showExplosion(explosionRadius); 
             }
         }
+    }
+
+    private boolean isWithinFrenzyRange(double playerX, double playerY) {
+        double dx = playerX - (x + width / 2);
+        double dy = playerY - (y + height / 2);
+        double distance = Math.sqrt(dx * dx + dy * dy);
+        return distance <= frenzyTriggerDistance;
+    }
+
+    private void activateFrenzyMode() {
+        frenzyActive = true;
+        speed += 1.5;
     }
 
     private boolean isWithinExplosionTriggerDistance(double playerX, double playerY) {

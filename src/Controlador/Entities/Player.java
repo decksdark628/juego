@@ -3,6 +3,12 @@ package Controlador.Entities;
 import Modelo.GameConstants;
 
 public class Player extends GameEntity {
+    private static final long REGEN_INTERVAL = GameConstants.REGENERATION_INTERVAL;
+    private static final double LEVEL_SCORE_MULTIPLIER = 1.65;
+    private static final int INITIAL_LEVEL = 1;
+    private static final int INITIAL_SCORE_TO_LEVEL = 100;
+    private static final int MIN_RELOAD_TIME = 250;
+
     private int maxHp;
     private int hp;
     private int damage;
@@ -13,6 +19,7 @@ public class Player extends GameEntity {
     private int level;
     private int skillPoints;
     private int scoreToNextLevel;
+    private int previousLevel;
     private long lastRegenTime;
     private int auxScore;
     private int maxAmmunition;
@@ -20,29 +27,34 @@ public class Player extends GameEntity {
     private long reloadTime; 
     private long lastReloadTime;
 
-
     public Player(double x, double y) {
-        super(x, y, 
-              GameConstants.PLAYER_SIZE, 
-              GameConstants.PLAYER_SIZE, 
-              3);
+        super(x, y, GameConstants.PLAYER_SIZE, GameConstants.PLAYER_SIZE, 4);
+        initializeStats();
+    }
+    
+    private void initializeStats() {
         this.maxHp = 50;
         this.hp = maxHp;
-        this.damage = 1;
-        this.hpRegen = 1;
+        this.damage = 10;
         this.score = 0;
-        this.level = 1;
+        this.hpRegen = 1;
+        this.level = INITIAL_LEVEL;
+        this.previousLevel = INITIAL_LEVEL;
         this.skillPoints = 0;
-        this.scoreToNextLevel = 100; 
+        this.scoreToNextLevel = INITIAL_SCORE_TO_LEVEL;
         this.lastRegenTime = System.currentTimeMillis();
         this.auxScore = 0;
-        this.maxAmmunition = 10; 
-        this.currentAmmunition = maxAmmunition; 
-        this.reloadTime = 2950; 
-        this.lastReloadTime = 0; 
+        initializeAmmunition();
+    }
+    
+    private void initializeAmmunition() {
+        this.maxAmmunition = 10;
+        this.currentAmmunition = maxAmmunition;
+        this.reloadTime = 2500;
+        this.lastReloadTime = 0;
     }
 
-    public void move() {
+    public void move(double deltaTime) {
         double dx = calculateHorizontalMovement();
         double dy = calculateVerticalMovement();
 
@@ -51,6 +63,9 @@ public class Player extends GameEntity {
             dx *= factor;
             dy *= factor;
         }
+
+        dx *= deltaTime * 60.0; 
+        dy *= deltaTime * 60.0;
 
         double newX = x + dx;
         double newY = y + dy;
@@ -92,7 +107,7 @@ public class Player extends GameEntity {
         return speed / Math.sqrt(dx * dx + dy * dy);
     }
 
-    public boolean Canshoot() {
+    public boolean canShoot() {
         if (isReloading()) {
             return false; 
         }
@@ -106,32 +121,15 @@ public class Player extends GameEntity {
         }
     }
     
-    /*public void reload() {
-        if (canReload()) {
-            long currentTime = System.currentTimeMillis();
-            double elapsedTime = currentTime - lastReloadTime;
-            double gap = maxAmmunition - currentAmmunition;
-            double timeXBullet = reloadTime / gap;
-        
-            while (gap>0 && elapsedTime >= timeXBullet) {
-                currentAmmunition++;
-                gap--;
-                elapsedTime -= timeXBullet;
-            }          
-            if (gap == 0) {
-                lastReloadTime = currentTime; 
-            } else {
-                lastReloadTime += timeXBullet * gap; 
-            }
-        }
-    }*/
+    private boolean isReloadTimeElapsed(long currentTime) {
+        return currentTime - lastReloadTime >= reloadTime;
+    }
 
     public void reload() {
         if(canReload()) {
             long currentTime = System.currentTimeMillis();
-            if (currentTime - lastReloadTime >= reloadTime) {
-                currentAmmunition = maxAmmunition; 
-                lastReloadTime = currentTime; 
+            if (isReloadTimeElapsed(currentTime)) {
+                performReload(currentTime);
             }
         }
     }
@@ -145,12 +143,66 @@ public class Player extends GameEntity {
         return (currentTime - lastReloadTime) < reloadTime;
     }
 
+    public void addScore(int points) {
+        score += points;
+        addAuxScore(points);
+    }
+    
+    public void addAuxScore(int points) {
+        auxScore += points;
+        checkLevelUp();
+    }
+    
+    private void checkLevelUp() {
+        while (auxScore >= scoreToNextLevel) {
+            auxScore -= scoreToNextLevel;
+            levelUp();
+        }
+    }
+    
+    private void levelUp() {
+        level++;
+        skillPoints++;
+        scoreToNextLevel *= LEVEL_SCORE_MULTIPLIER;
+        healOnLevelUp();
+    }
+    
+    private void healOnLevelUp() {
+        int healAmount = maxHp / 10;
+        increaseHealth(healAmount);
+        ensureHealthDoesNotExceedMax();
+    }
+    
+    public boolean hasLeveledUp() {
+        if (level > previousLevel) {
+            previousLevel = level;
+            return true;
+        }
+        return false;
+    }
+    
+    public void regenerateHp() {
+        long currentTime = System.currentTimeMillis();
+        if (canRegenerateHealth() && isRegenTimeElapsed(currentTime)) {
+            performHealthRegeneration();
+            lastRegenTime = currentTime;
+        }
+    }
+    
+    private boolean isRegenTimeElapsed(long currentTime) {
+        return currentTime - lastRegenTime >= REGEN_INTERVAL;
+    }
+    
+    private void performHealthRegeneration() {
+        increaseHealth(hpRegen);
+        ensureHealthDoesNotExceedMax();
+    }
+    
     public void hit(double damage) {
         reduceHealth(damage);
         ensureHealthIsNonNegative();
-        lastRegenTime = System.currentTimeMillis(); 
     }
-
+    
     private void reduceHealth(double damage) {
         hp -= damage;
     }
@@ -159,45 +211,26 @@ public class Player extends GameEntity {
         if (hp < 0) hp = 0;
     }
 
-    public void regenerateHp() {
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastRegenTime >= GameConstants.REGENERATION_INTERVAL && canRegenerateHealth()) {
-            increaseHealth(getHpRegen());
-            ensureHealthDoesNotExceedMax();
-            lastRegenTime = currentTime; 
-        }
+    private void ensureHealthDoesNotExceedMax() {
+        if (hp > maxHp) hp = maxHp;
     }
 
     private boolean canRegenerateHealth() {
         return hp < maxHp;
     }
 
-    private void ensureHealthDoesNotExceedMax() {
-        if (hp > maxHp) hp = maxHp;
+    private void performReload(long currentTime) {
+        currentAmmunition = maxAmmunition;
+        lastReloadTime = currentTime;
     }
 
-    public void addScore(int points) {
-        score += points;
-  
-    }
-    
-    public void addAuxScore(int points){
-        auxScore +=points;
-        checkLevelUp();
-    }
-    
-    private void checkLevelUp() {
-        while (auxScore >= scoreToNextLevel) {
-            auxScore -= scoreToNextLevel; 
-            levelUp();
+    public void upgradeReloadTime(long reduction) {
+        if (reloadTime - reduction >= MIN_RELOAD_TIME) {
+            reloadTime -= reduction;
+        } else {
+            reloadTime = MIN_RELOAD_TIME;
         }
-    }
-
-    private void levelUp() {
-        level++;
-        skillPoints++;
-        scoreToNextLevel *= 1.65; 
-        hp = Math.min(hp + maxHp / 10, maxHp);
+        skillPoints--;
     }
 
     public void setMovementKeyPressed(String key, boolean pressed) {
@@ -244,14 +277,6 @@ public class Player extends GameEntity {
          this.maxAmmunition += a;
          skillPoints--;
          currentAmmunition = maxAmmunition;
-    }
-    public void upgradeReloadTime(long r){
-        if(reloadTime - r >= 0){
-            this.reloadTime -= r;
-            skillPoints--;
-        } else {
-            this.reloadTime = 250;
-        }
     }
     
     public void setAngle(double angle) { this.angle = angle; }

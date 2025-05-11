@@ -1,10 +1,7 @@
 package Controlador.Entities;
 
-import Controlador.Entities.Player;
-import Controlador.Entities.Enemy2;
-import Controlador.Entities.Enemy;
-import Controlador.Entities.Enemy1;
 import Modelo.ImagePaths;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.geometry.Point2D;
@@ -17,6 +14,11 @@ import javafx.util.Duration;
 public class EnemySprite extends ImageView {
     private Enemy enemyModel;
     private Player playerModel; 
+    private String[] enemyImages = {
+        ImagePaths.ZOMBIE,
+        ImagePaths.ENEMY_2,
+        ImagePaths.ENEMY_3
+    };
 
     protected EnemySprite enemyView;
 
@@ -38,11 +40,11 @@ public class EnemySprite extends ImageView {
 
     private String determineEnemyImage(Enemy enemy) {
         if (enemy instanceof Enemy1) {
-            return ImagePaths.ZOMBIE;
+            return enemyImages[0];
         } else if (enemy instanceof Enemy2) {
-            return ImagePaths.ENEMY_2;
+            return enemyImages[1];
         } else {
-            return ImagePaths.ENEMY_3;
+            return enemyImages[2];
         }
     }
 
