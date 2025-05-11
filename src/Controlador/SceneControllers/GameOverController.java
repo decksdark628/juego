@@ -1,5 +1,6 @@
 package Controlador.SceneControllers;
 
+import Controlador.Utils.BackgroundMusic;
 import Controlador.Utils.DataImporter;
 import Controlador.Utils.SceneManager;
 import Modelo.PlayerSessionData;
@@ -13,8 +14,11 @@ import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
 public class GameOverController implements Initializable{
+    private Stage primaryStage;
+    private static BackgroundMusic gameOverMusic;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -85,5 +89,20 @@ public class GameOverController implements Initializable{
     void seeScoresRelease(MouseEvent event) {
         btnGoToScoreboard.setImage(new Image(getClass().getResourceAsStream("/Vista/assets/images/seeScoreboardButton-hover.png")));    
         SceneManager.goToScene(ScenePaths.SCORES);
+    }
+    
+    public void setPrimaryStage(Stage stage) {
+        this.primaryStage = stage;
+    }
+    
+    public void setGameOverMusic(BackgroundMusic music) {
+        this.gameOverMusic = music;
+        if (gameOverMusic != null) {
+            gameOverMusic.play();
+        }
+    }
+    
+    public static void stopGameOverMusic(){
+        gameOverMusic.stop();
     }
 }

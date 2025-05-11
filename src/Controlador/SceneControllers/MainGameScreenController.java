@@ -27,7 +27,13 @@ import Modelo.GameConstants;
 import Controlador.Cursor;
 import Controlador.GameEngine;
 import Controlador.EnemySpawner;
-import Controlador.Utils.*;
+import Controlador.Utils.BackgroundMusic;
+import Controlador.Utils.Database;
+import Controlador.Utils.InputHandler;
+import Controlador.Utils.SoundManager;
+import Controlador.Utils.TimestampGenerator;
+import Controlador.Utils.UIManager;
+import Modelo.PlayerSessionData;
 
 import java.io.IOException;
 
@@ -294,6 +300,9 @@ public class MainGameScreenController {
     }
 
     private void gameOver() {
+        PlayerSessionData.setLocalScore(gameEngine.getPlayer().getScore());
+        PlayerSessionData.setDeathTimestamp(TimestampGenerator.generate());
+        Database.sendPlayerScore();
         stopGame();
         loadGameOverScene();
     }
@@ -308,8 +317,7 @@ public class MainGameScreenController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(ScenePaths.GAME_OVER));
             Parent root = loader.load();
-            AltGameOverController controller = loader.getController();
-            controller.setFinalScore(gameEngine.getPlayer().getScore());
+            GameOverController controller = loader.getController();
             controller.setPrimaryStage((Stage) rootPane.getScene().getWindow());
 
             Scene gameOverScene = new Scene(root, 1024, 768);
@@ -337,8 +345,6 @@ public class MainGameScreenController {
             controller.setStage(currentStage);            
             controller.setGameScene(currentGameScene);
             
-            
-
             controller.setGameTimers(gameLoop, gameTimer, enemySpawnerTimeline);
             controller.setBackgroundMusic(backgroundMusic);
 
@@ -361,6 +367,8 @@ public class MainGameScreenController {
         this.backgroundMusic = new BackgroundMusic();
         backgroundMusic.play();
     }
-    
-        
+
+    public BackgroundMusic getBackgroundMusic() {
+        return backgroundMusic;
+    }   
 }

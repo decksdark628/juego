@@ -142,7 +142,7 @@ public class LoginScreenController implements Initializable {
             if (Config.ASK_TO_IMPORT_SAMPLE_DATA){            
                 if((PopupWindows.showYesNoAlert(PopupWindows.AlertMessage.OFFER_SAMPLE_DATA)).get() == ButtonType.YES)
                     importar(Config.CREATE_DB_TABLES, dbConnection);
-                    importar(Config.SAMPLE_DATA_PATH, dbConnection);
+                importar(Config.SAMPLE_DATA_PATH, dbConnection);
             }
             else{
                 PopupWindows.showSimpleAlert(PopupWindows.AlertMessage.DATABASE_CONNECTED);

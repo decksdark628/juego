@@ -15,7 +15,6 @@ public class Main extends Application {
         primaryStage.setResizable(false);
         
         SceneManager.goToScene(Config.getStartScenePath());
-        Cursor.applyCustomCursor(primaryStage.getScene());
         primaryStage.show();
     }    
     

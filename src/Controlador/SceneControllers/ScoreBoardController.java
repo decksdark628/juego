@@ -58,13 +58,7 @@ public class ScoreBoardController {
 
     @FXML
     private TextArea commentBox;
-    
-    //cambios:
-    //playersessiondata: remover localpartida porque no se usa. SQL auto añade la siguiente partida
-    // init.sql  y el otro script: corregidos para que se pueda autoincrementar entradas
-    // Scoreboard controller: ACTUALIZAR LA TABLA AL DEJAR EL COMENTARIO
-    // playerSessionData, GameOverScreen, gamecontroller, timestampgenerator: timestamp del momento de muerte
-    
+       
     public void initialize(){
         scoresTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         
@@ -127,6 +121,8 @@ public class ScoreBoardController {
         btnLogoff.setImage(new Image(getClass().getResourceAsStream("/Vista/assets/images/logOffButton-pressed.png")));
         PlayerSessionData.setLocalUsername(null);
         PlayerSessionData.setLocalScore(0);
+        GameOverController.stopGameOverMusic();
+        
         SceneManager.goToScene(ScenePaths.LOGIN_SCREEN);
     }
     
@@ -180,6 +176,8 @@ public class ScoreBoardController {
     @FXML
     void returnBtnRelease(MouseEvent event) {
         btnReturn.setImage(new Image(getClass().getResourceAsStream("/Vista/assets/images/returnToGameButton-hover.png")));
+        GameOverController.stopGameOverMusic();
         SceneManager.goToScene(ScenePaths.GAME_SCREEN);
+        
     }
 }
